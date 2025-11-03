@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanças Pessoais | Controle Seu Salário</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #8b5cf6;
+            --secondary: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --gray-light: #cbd5e1;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+        
+        body {
+            background: var(--gradient);
+            color: var(--secondary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 30px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 16px;
+        }
+        
+        .logo-text h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .header-bg {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40%;
+            height: 100%;
+            opacity: 0.1;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="white"><circle cx="50" cy="50" r="2"/></svg>') repeat;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 0;
+            min-height: 600px;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-section {
+            padding: 40px;
+            background: var(--light);
+            border-right: 1px solid var(--gray-light);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            color: var(--secondary);
+        }
+        
+        .section-title i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .section-title h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .calculation-mode {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: white;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .mode-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+        }
+        
+        .input-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            z-index: 2;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+            position: relative;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+        
+        .percentage-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 8px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: var(--gray-light);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+        
+        .suggestions {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .suggestion-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: var(--secondary);
+            border: 1.5px solid var(--gray-light);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--light);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .results-section {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            background: white;
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .card-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 5px;
+        }
+        
+        .card-percentage {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chart-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .total-section {
+            padding: 30px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .total-item h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .total-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+        
+        .remaining {
+            padding: 24px;
+            background: var(--danger);
+            color: white;
+            border-radius: 16px;
+            text-align: center;
+            display: none;
+            animation: pulse 2s infinite;
+            margin-top: 20px;
+        }
+        
+        .remaining.show {
+            display: block;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        .category-color-1 { border-left-color: #6366f1; }
+        .category-color-2 { border-left-color: #10b981; }
+        .category-color-3 { border-left-color: #f59e0b; }
+        .category-color-4 { border-left-color: #ef4444; }
+        .category-color-5 { border-left-color: #8b5cf6; }
+        .category-color-6 { border-left-color: #06b6d4; }
+        
+        .icon-bg-1 { background: #6366f1; }
+        .icon-bg-2 { background: #10b981; }
+        .icon-bg-3 { background: #f59e0b; }
+        .icon-bg-4 { background: #ef4444; }
+        .icon-bg-5 { background: #8b5cf6; }
+        .icon-bg-6 { background: #06b6d4; }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        .history-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: var(--light);
+            border-radius: 16px;
+        }
+        
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            transition: background 0.2s;
+        }
+        
+        .history-item:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .advice-section {
+            background: #fff3cd;
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 20px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .advice-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .save-section {
+            background: #d1fae5;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .save-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .saved-budgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .saved-budget {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .saved-budget:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .saved-budget-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .saved-budget-name {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .saved-budget-date {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .saved-budget-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+        
+        .budget-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .budget-action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .load-btn {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .delete-btn {
+            background: var(--danger);
+            color: white;
+        }
+        
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success {
+            background: var(--success);
+        }
+        
+        .toast.error {
+            background: var(--danger);
+        }
+        
+        .toast.info {
+            background: var(--info);
+        }
+        
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 16px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .header-stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-section, .results-section {
+                padding: 20px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .total-section {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .saved-budgets {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Controle Financeiro</h1>
+                        <p>Gerencie seu salário de forma inteligente</p>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="header-salary">R$ 0,00</div>
+                        <div class="stat-label">Salário</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="header-free">R$ 0,00</div>
+                        <div class="stat-label">Valor Livre</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="header-safety">10%</div>
+                        <div class="stat-label">Fundo Segurança</div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-bg"></div>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section-title">
+                    <i class="fas fa-sliders-h"></i>
+                    <h2>Configurar Orçamento</h2>
+                </div>
+                
+                <div class="calculation-mode">
+                    <div class="mode-btn active" id="mode-values">
+                        <i class="fas fa-money-bill-wave"></i> Valores Fixos
+                    </div>
+                    <div class="mode-btn" id="mode-percentages">
+                        <i class="fas fa-percentage"></i> Porcentagens
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="salary"><i class="fas fa-money-check"></i> Valor do Salário (R$)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                        <input type="number" id="salary" placeholder="0,00" min="0" step="0.01">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="bills"><i class="fas fa-file-invoice"></i> Contas (R$)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-receipt"></i>
+                        <input type="number" id="bills" placeholder="0,00" min="0" step="0.01">
+                    </div>
+                    <div class="percentage-info">
+                        <span id="bills-percentage">0% do salário</span>
+                        <span id="bills-remaining">Restante: R$ 0,00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="bills-progress" style="width: 0%; background: #6366f1;"></div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="market"><i class="fas fa-shopping-basket"></i> Mercado (R$)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-utensils"></i>
+                        <input type="number" id="market" placeholder="0,00" min="0" step="0.01">
+                    </div>
+                    <div class="percentage-info">
+                        <span id="market-percentage">0% do salário</span>
+                        <span id="market-remaining">Restante: R$ 0,00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="market-progress" style="width: 0%; background: #10b981;"></div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="streaming"><i class="fas fa-tv"></i> Streaming (R$)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-film"></i>
+                        <input type="number" id="streaming" placeholder="0,00" min="0" step="0.01">
+                    </div>
+                    <div class="percentage-info">
+                        <span id="streaming-percentage">0% do salário</span>
+                        <span id="streaming-remaining">Restante: R$ 0,00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="streaming-progress" style="width: 0%; background: #f59e0b;"></div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="installments"><i class="fas fa-credit-card"></i> Parcelas (R$)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                        <input type="number" id="installments" placeholder="0,00" min="0" step="0.01">
+                    </div>
+                    <div class="percentage-info">
+                        <span id="installments-percentage">0% do salário</span>
+                        <span id="installments-remaining">Restante: R$ 0,00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="installments-progress" style="width: 0%; background: #ef4444;"></div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="safety"><i class="fas fa-piggy-bank"></i> Fundo de Segurança (%)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-percentage"></i>
+                        <input type="number" id="safety" placeholder="10" value="10" min="0" max="100" step="0.1">
+                    </div>
+                    <div class="percentage-info">
+                        <span id="safety-value">Valor: R$ 0,00</span>
+                        <span id="safety-remaining">Restante: R$ 0,00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="safety-progress" style="width: 10%; background: #8b5cf6;"></div>
+                    </div>
+                </div>
+                
+                <div class="suggestions">
+                    <h3><i class="fas fa-lightbulb"></i> Sugestões Inteligentes</h3>
+                    <div id="suggestions-list">
+                        <div class="suggestion-item">
+                            <div><i class="fas fa-piggy-bank"></i> Fundo de emergência: 10% do salário</div>
+                            <button class="apply-suggestion" style="background: none; border: none; color: var(--primary); cursor: pointer; width: auto; padding: 5px 10px;">
+                                <i class="fas fa-check"></i> Aplicar
+                            </button>
+                        </div>
+                        <div class="suggestion-item">
+                            <div><i class="fas fa-chart-line"></i> Investimentos: 15% do salário</div>
+                            <button class="apply-suggestion" style="background: none; border: none; color: var(--primary); cursor: pointer; width: auto; padding: 5px 10px;">
+                                <i class="fas fa-check"></i> Aplicar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button id="calculate" class="btn-primary">
+                        <i class="fas fa-calculator"></i> Calcular Distribuição
+                    </button>
+                    <button id="reset" class="btn-secondary">
+                        <i class="fas fa-redo"></i> Limpar
+                    </button>
+                </div>
+                
+                <div class="save-section">
+                    <h3><i class="fas fa-save"></i> Salvar Orçamento</h3>
+                    <div class="input-with-icon" style="margin-bottom: 15px;">
+                        <i class="fas fa-tag"></i>
+                        <input type="text" id="budget-name" placeholder="Nome do orçamento (ex: Orçamento Janeiro)">
+                    </div>
+                    <button id="save-budget" class="btn-success">
+                        <i class="fas fa-save"></i> Salvar Orçamento Atual
+                    </button>
+                    
+                    <div id="saved-budgets-container" style="margin-top: 20px;">
+                        <h4 style="margin-bottom: 15px;">Orçamentos Salvos</h4>
+                        <div class="saved-budgets" id="saved-budgets">
+                            <!-- Os orçamentos salvos serão carregados aqui -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-pie"></i>
+                    <h2>Visão Geral do Orçamento</h2>
+                </div>
+                
+                <div class="summary-cards">
+                    <div class="card category-color-1 fade-in">
+                        <div class="card-header">
+                            <div class="card-icon icon-bg-1">
+                                <i class="fas fa-file-invoice"></i>
+                            </div>
+                            <h3>Contas</h3>
+                        </div>
+                        <div class="card-value" id="bills-result">R$ 0,00</div>
+                        <div class="card-percentage" id="bills-result-percentage">0%</div>
+                    </div>
+                    
+                    <div class="card category-color-2 fade-in">
+                        <div class="card-header">
+                            <div class="card-icon icon-bg-2">
+                                <i class="fas fa-shopping-basket"></i>
+                            </div>
+                            <h3>Mercado</h3>
+                        </div>
+                        <div class="card-value" id="market-result">R$ 0,00</div>
+                        <div class="card-percentage" id="market-result-percentage">0%</div>
+                    </div>
+                    
+                    <div class="card category-color-3 fade-in">
+                        <div class="card-header">
+                            <div class="card-icon icon-bg-3">
+                                <i class="fas fa-tv"></i>
+                            </div>
+                            <h3>Streaming</h3>
+                        </div>
+                        <div class="card-value" id="streaming-result">R$ 0,00</div>
+                        <div class="card-percentage" id="streaming-result-percentage">0%</div>
+                    </div>
+                    
+                    <div class="card category-color-4 fade-in">
+                        <div class="card-header">
+                            <div class="card-icon icon-bg-4">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <h3>Parcelas</h3>
+                        </div>
+                        <div class="card-value" id="installments-result">R$ 0,00</div>
+                        <div class="card-percentage" id="installments-result-percentage">0%</div>
+                    </div>
+                    
+                    <div class="card category-color-5 fade-in">
+                        <div class="card-header">
+                            <div class="card-icon icon-bg-5">
+                                <i class="fas fa-piggy-bank"></i>
+                            </div>
+                            <h3>Fundo de Segurança</h3>
+                        </div>
+                        <div class="card-value" id="safety-result">R$ 0,00</div>
+                        <div class="card-percentage" id="safety-result-percentage">0%</div>
+                    </div>
+                    
+                    <div class="card category-color-6 fade-in">
+                        <div class="card-header">
+                            <div class="card-icon icon-bg-6">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <h3>Valor Livre</h3>
+                        </div>
+                        <div class="card-value" id="free-result">R$ 0,00</div>
+                        <div class="card-percentage" id="free-result-percentage">0%</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-doughnut"></i>
+                        <h3>Distribuição do Orçamento</h3>
+                    </div>
+                    <canvas id="distributionChart"></canvas>
+                </div>
+                
+                <div class="advice-section" id="advice-section">
+                    <h3><i class="fas fa-comments"></i> Recomendações Financeiras</h3>
+                    <div id="advice-content">
+                        <p>Informe seu salário para receber recomendações personalizadas.</p>
+                    </div>
+                </div>
+                
+                <div class="total-section">
+                    <div class="total-item">
+                        <h2><i class="fas fa-chart-line"></i> Total Distribuído</h2>
+                        <div class="total-value" id="total-result">R$ 0,00</div>
+                    </div>
+                    <div class="total-item">
+                        <h2><i class="fas fa-wallet"></i> Salário Total</h2>
+                        <div class="total-value" id="salary-result">R$ 0,00</div>
+                    </div>
+                </div>
+                
+                <div class="remaining" id="remaining">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Atenção: Gastos Maiores que o Salário</h3>
+                    <div class="total-value" id="remaining-value">R$ 0,00</div>
+                    <p>Você precisa ajustar seus gastos para equilibrar seu orçamento!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="history-section">
+            <div class="section-title">
+                <i class="fas fa-history"></i>
+                <h2>Histórico de Cálculos</h2>
+            </div>
+            <div class="history-list" id="history-list">
+                <div class="history-item">
+                    <div>
+                        <strong>Nenhum cálculo realizado</strong>
+                        <div style="font-size: 0.8rem; color: #666;">Os cálculos aparecerão aqui</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Finanças Pessoais &copy; 2023 - Controle seu orçamento de forma inteligente</p>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Backend com localStorage para persistência de dados
+        const BudgetManager = {
+            // Chave para armazenamento no localStorage
+            STORAGE_KEY: 'salary_budgets',
+            
+            // Salvar orçamento
+            saveBudget: function(name, budgetData) {
+                const budgets = this.getAllBudgets();
+                const timestamp = new Date().toISOString();
+                
+                const newBudget = {
+                    id: Date.now().toString(),
+                    name: name,
+                    data: budgetData,
+                    timestamp: timestamp,
+                    lastModified: timestamp
+                };
+                
+                budgets.push(newBudget);
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(budgets));
+                return newBudget;
+            },
+            
+            // Obter todos os orçamentos
+            getAllBudgets: function() {
+                const stored = localStorage.getItem(this.STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            },
+            
+            // Obter orçamento por ID
+            getBudget: function(id) {
+                const budgets = this.getAllBudgets();
+                return budgets.find(budget => budget.id === id);
+            },
+            
+            // Atualizar orçamento
+            updateBudget: function(id, budgetData) {
+                const budgets = this.getAllBudgets();
+                const index = budgets.findIndex(budget => budget.id === id);
+                
+                if (index !== -1) {
+                    budgets[index].data = budgetData;
+                    budgets[index].lastModified = new Date().toISOString();
+                    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(budgets));
+                    return budgets[index];
+                }
+                return null;
+            },
+            
+            // Excluir orçamento
+            deleteBudget: function(id) {
+                const budgets = this.getAllBudgets();
+                const filteredBudgets = budgets.filter(budget => budget.id !== id);
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filteredBudgets));
+                return filteredBudgets.length !== budgets.length;
+            },
+            
+            // Limpar todos os orçamentos
+            clearAllBudgets: function() {
+                localStorage.removeItem(this.STORAGE_KEY);
+            }
+        };
+
+        // Sistema de notificações
+        const NotificationSystem = {
+            show: function(message, type = 'info', duration = 4000) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.className = 'toast';
+                toast.classList.add(type);
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, duration);
+            }
+        };
+
+        // Sistema de histórico
+        const HistoryManager = {
+            STORAGE_KEY: 'calculation_history',
+            
+            addEntry: function(calculationData) {
+                const history = this.getHistory();
+                const entry = {
+                    id: Date.now().toString(),
+                    timestamp: new Date().toISOString(),
+                    data: calculationData
+                };
+                
+                history.unshift(entry);
+                // Manter apenas os últimos 10 cálculos
+                if (history.length > 10) {
+                    history.pop();
+                }
+                
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(history));
+                this.updateHistoryDisplay();
+            },
+            
+            getHistory: function() {
+                const stored = localStorage.getItem(this.STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            },
+            
+            updateHistoryDisplay: function() {
+                const historyList = document.getElementById('history-list');
+                const history = this.getHistory();
+                
+                if (history.length === 0) {
+                    historyList.innerHTML = `
+                        <div class="history-item">
+                            <div>
+                                <strong>Nenhum cálculo realizado</strong>
+                                <div style="font-size: 0.8rem; color: #666;">Os cálculos aparecerão aqui</div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                historyList.innerHTML = history.map(entry => {
+                    const date = new Date(entry.timestamp);
+                    const dateStr = date.toLocaleDateString('pt-BR');
+                    const timeStr = date.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+                    const freeValue = entry.data.freeValue;
+                    
+                    return `
+                        <div class="history-item">
+                            <div>
+                                <strong>${dateStr} ${timeStr}</strong>
+                                <div style="font-size: 0.8rem; color: #666;">Salário: R$ ${entry.data.salary.toFixed(2)}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: bold; color: ${freeValue >= 0 ? '#10b981' : '#ef4444'}">
+                                    ${freeValue >= 0 ? 'R$ ' + freeValue.toFixed(2) : '-R$ ' + Math.abs(freeValue).toFixed(2)}
+                                </div>
+                                <div style="font-size: 0.8rem; color: #666;">Livre</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+            
+            clearHistory: function() {
+                localStorage.removeItem(this.STORAGE_KEY);
+                this.updateHistoryDisplay();
+            }
+        };
+
+        // Aplicação principal
+        document.addEventListener('DOMContentLoaded', function() {
+            const calculateBtn = document.getElementById('calculate');
+            const resetBtn = document.getElementById('reset');
+            const saveBudgetBtn = document.getElementById('save-budget');
+            const modeValues = document.getElementById('mode-values');
+            const modePercentages = document.getElementById('mode-percentages');
+            let chart = null;
+            let calculationMode = 'values';
+            
+            // Inicializar componentes
+            initializeChart();
+            setupEventListeners();
+            loadSavedBudgets();
+            HistoryManager.updateHistoryDisplay();
+            
+            // Carregar último orçamento salvo, se existir
+            loadLastBudget();
+            
+            function initializeChart() {
+                const ctx = document.getElementById('distributionChart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Contas', 'Mercado', 'Streaming', 'Parcelas', 'Fundo de Segurança', 'Valor Livre'],
+                        datasets: [{
+                            data: [0, 0, 0, 0, 0, 0],
+                            backgroundColor: [
+                                '#6366f1', '#10b981', '#f59e0b', 
+                                '#ef4444', '#8b5cf6', '#06b6d4'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.raw || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return `${label}: R$ ${value.toFixed(2)} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            function setupEventListeners() {
+                calculateBtn.addEventListener('click', calculateDistribution);
+                resetBtn.addEventListener('click', resetForm);
+                saveBudgetBtn.addEventListener('click', saveCurrentBudget);
+                
+                // Modos de cálculo
+                modeValues.addEventListener('click', function() {
+                    setCalculationMode('values');
+                });
+                modePercentages.addEventListener('click', function() {
+                    setCalculationMode('percentages');
+                });
+                
+                // Cálculo em tempo real
+                document.getElementById('salary').addEventListener('input', updateRealTimeCalculations);
+            }
+            
+            function setCalculationMode(mode) {
+                calculationMode = mode;
+                
+                if (mode === 'values') {
+                    modeValues.classList.add('active');
+                    modePercentages.classList.remove('active');
+                    document.getElementById('bills').placeholder = '0,00';
+                    document.getElementById('market').placeholder = '0,00';
+                    document.getElementById('streaming').placeholder = '0,00';
+                    document.getElementById('installments').placeholder = '0,00';
+                } else {
+                    modeValues.classList.remove('active');
+                    modePercentages.classList.add('active');
+                    document.getElementById('bills').placeholder = '0';
+                    document.getElementById('market').placeholder = '0';
+                    document.getElementById('streaming').placeholder = '0';
+                    document.getElementById('installments').placeholder = '0';
+                }
+                
+                updateRealTimeCalculations();
+            }
+            
+            function updateRealTimeCalculations() {
+                const salary = parseFloat(document.getElementById('salary').value) || 0;
+                
+                if (salary > 0) {
+                    updateCategoryInfo('bills', salary);
+                    updateCategoryInfo('market', salary);
+                    updateCategoryInfo('streaming', salary);
+                    updateCategoryInfo('installments', salary);
+                    updateCategoryInfo('safety', salary);
+                    
+                    updateHeaderStats(salary);
+                }
+            }
+            
+            function updateCategoryInfo(category, salary) {
+                const input = document.getElementById(category);
+                const value = parseFloat(input.value) || 0;
+                const percentageInfo = document.getElementById(`${category}-percentage`);
+                const remainingInfo = document.getElementById(`${category}-remaining`);
+                const progressBar = document.getElementById(`${category}-progress`);
+                
+                if (calculationMode === 'values') {
+                    const percentage = salary > 0 ? (value / salary) * 100 : 0;
+                    const remaining = salary - value;
+                    
+                    percentageInfo.textContent = `${percentage.toFixed(1)}% do salário`;
+                    remainingInfo.textContent = `Restante: R$ ${remaining.toFixed(2)}`;
+                    progressBar.style.width = `${Math.min(percentage, 100)}%`;
+                    
+                    if (percentage > 50) {
+                        progressBar.style.background = 'var(--danger)';
+                    } else if (percentage > 30) {
+                        progressBar.style.background = 'var(--warning)';
+                    } else {
+                        progressBar.style.background = category === 'safety' ? '#8b5cf6' : '#6366f1';
+                    }
+                } else {
+                    if (category === 'safety') {
+                        const safetyValue = (salary * value) / 100;
+                        const remaining = salary - safetyValue;
+                        
+                        document.getElementById('safety-value').textContent = `Valor: R$ ${safetyValue.toFixed(2)}`;
+                        remainingInfo.textContent = `Restante: R$ ${remaining.toFixed(2)}`;
+                        progressBar.style.width = `${Math.min(value, 100)}%`;
+                    } else {
+                        const categoryValue = (salary * value) / 100;
+                        const remaining = salary - categoryValue;
+                        
+                        percentageInfo.textContent = `Valor: R$ ${categoryValue.toFixed(2)}`;
+                        remainingInfo.textContent = `Restante: R$ ${remaining.toFixed(2)}`;
+                        progressBar.style.width = `${Math.min(value, 100)}%`;
+                        
+                        if (value > 50) {
+                            progressBar.style.background = 'var(--danger)';
+                        } else if (value > 30) {
+                            progressBar.style.background = 'var(--warning)';
+                        } else {
+                            progressBar.style.background = '#6366f1';
+                        }
+                    }
+                }
+            }
+            
+            function updateHeaderStats(salary) {
+                document.getElementById('header-salary').textContent = `R$ ${salary.toFixed(2)}`;
+                
+                // Calcular valor livre aproximado para o header
+                const bills = parseFloat(document.getElementById('bills').value) || 0;
+                const market = parseFloat(document.getElementById('market').value) || 0;
+                const streaming = parseFloat(document.getElementById('streaming').value) || 0;
+                const installments = parseFloat(document.getElementById('installments').value) || 0;
+                const safetyPercentage = parseFloat(document.getElementById('safety').value) || 0;
+                const safety = (salary * safetyPercentage) / 100;
+                
+                const freeValue = salary - (bills + market + streaming + installments + safety);
+                document.getElementById('header-free').textContent = `R$ ${freeValue.toFixed(2)}`;
+                document.getElementById('header-safety').textContent = `${safetyPercentage}%`;
+            }
+            
+            function calculateDistribution() {
+                const salary = parseFloat(document.getElementById('salary').value) || 0;
+                
+                if (salary <= 0) {
+                    NotificationSystem.show('Por favor, informe um valor de salário válido.', 'error');
+                    return;
+                }
+                
+                let bills, market, streaming, installments;
+                
+                if (calculationMode === 'values') {
+                    bills = parseFloat(document.getElementById('bills').value) || 0;
+                    market = parseFloat(document.getElementById('market').value) || 0;
+                    streaming = parseFloat(document.getElementById('streaming').value) || 0;
+                    installments = parseFloat(document.getElementById('installments').value) || 0;
+                } else {
+                    const billsPercent = parseFloat(document.getElementById('bills').value) || 0;
+                    const marketPercent = parseFloat(document.getElementById('market').value) || 0;
+                    const streamingPercent = parseFloat(document.getElementById('streaming').value) || 0;
+                    const installmentsPercent = parseFloat(document.getElementById('installments').value) || 0;
+                    
+                    bills = (salary * billsPercent) / 100;
+                    market = (salary * marketPercent) / 100;
+                    streaming = (salary * streamingPercent) / 100;
+                    installments = (salary * installmentsPercent) / 100;
+                }
+                
+                const safetyPercentage = parseFloat(document.getElementById('safety').value) || 0;
+                const safety = (salary * safetyPercentage) / 100;
+                
+                const totalDistributed = bills + market + streaming + installments + safety;
+                const freeValue = salary - totalDistributed;
+                
+                updateResults(salary, bills, market, streaming, installments, safety, freeValue);
+                updateChart(bills, market, streaming, installments, safety, freeValue);
+                showRemainingAlert(freeValue);
+                generateFinancialAdvice(salary, bills, market, streaming, installments, safety, freeValue);
+                
+                // Salvar no histórico
+                HistoryManager.addEntry({
+                    salary, bills, market, streaming, installments, safety, freeValue
+                });
+                
+                NotificationSystem.show('Cálculo realizado com sucesso!', 'success');
+            }
+            
+            function updateResults(salary, bills, market, streaming, installments, safety, freeValue) {
+                document.getElementById('bills-result').textContent = `R$ ${bills.toFixed(2)}`;
+                document.getElementById('market-result').textContent = `R$ ${market.toFixed(2)}`;
+                document.getElementById('streaming-result').textContent = `R$ ${streaming.toFixed(2)}`;
+                document.getElementById('installments-result').textContent = `R$ ${installments.toFixed(2)}`;
+                document.getElementById('safety-result').textContent = `R$ ${safety.toFixed(2)}`;
+                document.getElementById('free-result').textContent = `R$ ${freeValue.toFixed(2)}`;
+                document.getElementById('total-result').textContent = `R$ ${(bills + market + streaming + installments + safety).toFixed(2)}`;
+                document.getElementById('salary-result').textContent = `R$ ${salary.toFixed(2)}`;
+                
+                document.getElementById('bills-result-percentage').textContent = `${((bills / salary) * 100).toFixed(1)}%`;
+                document.getElementById('market-result-percentage').textContent = `${((market / salary) * 100).toFixed(1)}%`;
+                document.getElementById('streaming-result-percentage').textContent = `${((streaming / salary) * 100).toFixed(1)}%`;
+                document.getElementById('installments-result-percentage').textContent = `${((installments / salary) * 100).toFixed(1)}%`;
+                document.getElementById('safety-result-percentage').textContent = `${((safety / salary) * 100).toFixed(1)}%`;
+                document.getElementById('free-result-percentage').textContent = `${((freeValue / salary) * 100).toFixed(1)}%`;
+            }
+            
+            function updateChart(bills, market, streaming, installments, safety, free) {
+                if (chart) {
+                    chart.data.datasets[0].data = [bills, market, streaming, installments, safety, free > 0 ? free : 0];
+                    chart.update();
+                }
+            }
+            
+            function showRemainingAlert(freeValue) {
+                const remaining = document.getElementById('remaining');
+                const remainingValue = document.getElementById('remaining-value');
+                
+                if (freeValue < 0) {
+                    remainingValue.textContent = `R$ ${Math.abs(freeValue).toFixed(2)}`;
+                    remaining.classList.add('show');
+                } else {
+                    remaining.classList.remove('show');
+                }
+            }
+            
+            function generateFinancialAdvice(salary, bills, market, streaming, installments, safety, freeValue) {
+                const adviceContent = document.getElementById('advice-content');
+                
+                const billsPercentage = (bills / salary) * 100;
+                const marketPercentage = (market / salary) * 100;
+                const installmentsPercentage = (installments / salary) * 100;
+                const safetyPercentage = (safety / salary) * 100;
+                const freePercentage = (freeValue / salary) * 100;
+                
+                let adviceHTML = '<ul style="padding-left: 20px;">';
+                
+                if (billsPercentage > 50) {
+                    adviceHTML += '<li>Suas contas estão consumindo mais de 50% da sua renda. Considere reduzir gastos fixos.</li>';
+                }
+                
+                if (marketPercentage > 30) {
+                    adviceHTML += '<li>Seus gastos com mercado estão altos. Planeje suas compras e evite desperdícios.</li>';
+                }
+                
+                if (installmentsPercentage > 20) {
+                    adviceHTML += '<li>Muitas parcelas podem comprometer seu orçamento. Evite novas dívidas.</li>';
+                }
+                
+                if (safetyPercentage < 10) {
+                    adviceHTML += '<li>Seu fundo de segurança está abaixo do recomendado (10%). Tente aumentar essa reserva.</li>';
+                } else if (safetyPercentage >= 10) {
+                    adviceHTML += '<li>Parabéns! Você está mantendo um bom fundo de segurança.</li>';
+                }
+                
+                if (freePercentage < 10) {
+                    adviceHTML += '<li>Seu valor livre está muito baixo. Considere reduzir alguns gastos.</li>';
+                } else if (freePercentage >= 20) {
+                    adviceHTML += '<li>Ótimo! Você tem uma boa margem para imprevistos ou investimentos.</li>';
+                }
+                
+                if (freeValue < 0) {
+                    adviceHTML += '<li>Seus gastos ultrapassam sua renda. É essencial rever seu orçamento.</li>';
+                }
+                
+                if (adviceHTML === '<ul style="padding-left: 20px;">') {
+                    adviceHTML += '<li>Seu orçamento está bem equilibrado! Continue com esse controle financeiro.</li>';
+                }
+                
+                adviceHTML += '</ul>';
+                adviceContent.innerHTML = adviceHTML;
+            }
+            
+            function resetForm() {
+                document.getElementById('salary').value = '';
+                document.getElementById('bills').value = '';
+                document.getElementById('market').value = '';
+                document.getElementById('streaming').value = '';
+                document.getElementById('installments').value = '';
+                document.getElementById('safety').value = '10';
+                document.getElementById('budget-name').value = '';
+                
+                document.querySelectorAll('.card-value').forEach(el => {
+                    el.textContent = 'R$ 0,00';
+                });
+                document.querySelectorAll('.card-percentage').forEach(el => {
+                    el.textContent = '0%';
+                });
+                document.getElementById('total-result').textContent = 'R$ 0,00';
+                document.getElementById('salary-result').textContent = 'R$ 0,00';
+                
+                updateChart(0, 0, 0, 0, 0, 0);
+                
+                document.querySelectorAll('.progress-fill').forEach(el => {
+                    el.style.width = '0%';
+                });
+                document.getElementById('safety-progress').style.width = '10%';
+                
+                document.querySelectorAll('.percentage-info span').forEach(el => {
+                    if (el.id.includes('percentage') || el.id.includes('value')) {
+                        el.textContent = el.id.includes('safety-value') ? 'Valor: R$ 0,00' : '0% do salário';
+                    } else {
+                        el.textContent = 'Restante: R$ 0,00';
+                    }
+                });
+                
+                document.getElementById('remaining').classList.remove('show');
+                document.getElementById('advice-content').innerHTML = '<p>Informe seu salário para receber recomendações personalizadas.</p>';
+                
+                document.getElementById('header-salary').textContent = 'R$ 0,00';
+                document.getElementById('header-free').textContent = 'R$ 0,00';
+                document.getElementById('header-safety').textContent = '10%';
+                
+                NotificationSystem.show('Formulário limpo com sucesso!', 'info');
+            }
+            
+            function saveCurrentBudget() {
+                const budgetName = document.getElementById('budget-name').value.trim();
+                const salary = parseFloat(document.getElementById('salary').value) || 0;
+                
+                if (!budgetName) {
+                    NotificationSystem.show('Por favor, informe um nome para o orçamento.', 'error');
+                    return;
+                }
+                
+                if (salary <= 0) {
+                    NotificationSystem.show('Por favor, calcule um orçamento antes de salvar.', 'error');
+                    return;
+                }
+                
+                let bills, market, streaming, installments;
+                
+                if (calculationMode === 'values') {
+                    bills = parseFloat(document.getElementById('bills').value) || 0;
+                    market = parseFloat(document.getElementById('market').value) || 0;
+                    streaming = parseFloat(document.getElementById('streaming').value) || 0;
+                    installments = parseFloat(document.getElementById('installments').value) || 0;
+                } else {
+                    const billsPercent = parseFloat(document.getElementById('bills').value) || 0;
+                    const marketPercent = parseFloat(document.getElementById('market').value) || 0;
+                    const streamingPercent = parseFloat(document.getElementById('streaming').value) || 0;
+                    const installmentsPercent = parseFloat(document.getElementById('installments').value) || 0;
+                    
+                    bills = (salary * billsPercent) / 100;
+                    market = (salary * marketPercent) / 100;
+                    streaming = (salary * streamingPercent) / 100;
+                    installments = (salary * installmentsPercent) / 100;
+                }
+                
+                const safetyPercentage = parseFloat(document.getElementById('safety').value) || 0;
+                
+                const budgetData = {
+                    salary,
+                    bills,
+                    market,
+                    streaming,
+                    installments,
+                    safetyPercentage,
+                    calculationMode,
+                    timestamp: new Date().toISOString()
+                };
+                
+                BudgetManager.saveBudget(budgetName, budgetData);
+                loadSavedBudgets();
+                
+                document.getElementById('budget-name').value = '';
+                NotificationSystem.show('Orçamento salvo com sucesso!', 'success');
+            }
+            
+            function loadSavedBudgets() {
+                const savedBudgetsContainer = document.getElementById('saved-budgets');
+                const budgets = BudgetManager.getAllBudgets();
+                
+                if (budgets.length === 0) {
+                    savedBudgetsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 20px; color: var(--gray);">
+                            <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>Nenhum orçamento salvo</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                savedBudgetsContainer.innerHTML = budgets.map(budget => {
+                    const date = new Date(budget.timestamp);
+                    const dateStr = date.toLocaleDateString('pt-BR');
+                    
+                    return `
+                        <div class="saved-budget">
+                            <div class="saved-budget-header">
+                                <div class="saved-budget-name">${budget.name}</div>
+                                <div class="saved-budget-date">${dateStr}</div>
+                            </div>
+                            <div class="saved-budget-value">R$ ${budget.data.salary.toFixed(2)}</div>
+                            <div class="budget-actions">
+                                <button class="budget-action-btn load-btn" onclick="loadBudget('${budget.id}')">
+                                    <i class="fas fa-download"></i> Carregar
+                                </button>
+                                <button class="budget-action-btn delete-btn" onclick="deleteBudget('${budget.id}')">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            function loadLastBudget() {
+                const budgets = BudgetManager.getAllBudgets();
+                if (budgets.length > 0) {
+                    const lastBudget = budgets[budgets.length - 1];
+                    // Não carregar automaticamente, mas poderíamos adicionar um botão para isso
+                }
+            }
+            
+            // Funções globais para os botões dos orçamentos salvos
+            window.loadBudget = function(budgetId) {
+                const budget = BudgetManager.getBudget(budgetId);
+                if (budget) {
+                    const data = budget.data;
+                    
+                    document.getElementById('salary').value = data.salary;
+                    document.getElementById('safety').value = data.safetyPercentage;
+                    
+                    if (data.calculationMode === 'values') {
+                        setCalculationMode('values');
+                        document.getElementById('bills').value = data.bills;
+                        document.getElementById('market').value = data.market;
+                        document.getElementById('streaming').value = data.streaming;
+                        document.getElementById('installments').value = data.installments;
+                    } else {
+                        setCalculationMode('percentages');
+                        document.getElementById('bills').value = (data.bills / data.salary) * 100;
+                        document.getElementById('market').value = (data.market / data.salary) * 100;
+                        document.getElementById('streaming').value = (data.streaming / data.salary) * 100;
+                        document.getElementById('installments').value = (data.installments / data.salary) * 100;
+                    }
+                    
+                    updateRealTimeCalculations();
+                    calculateDistribution();
+                    NotificationSystem.show('Orçamento carregado com sucesso!', 'success');
+                }
+            };
+            
+            window.deleteBudget = function(budgetId) {
+                if (confirm('Tem certeza que deseja excluir este orçamento?')) {
+                    BudgetManager.deleteBudget(budgetId);
+                    loadSavedBudgets();
+                    NotificationSystem.show('Orçamento excluído com sucesso!', 'info');
+                }
+            };
+        });
+    </script>
+</body>
+</html>
